@@ -1,48 +1,31 @@
 let players = ["x", "o"];
 let activePlayer = 0;
-let board = [];
+let board = [
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', '']
+];
 
 function checkWinner() {
-    const winPatterns = [
-        // Горизонтали
-        [[0,0], [0,1], [0,2]],
-        [[1,0], [1,1], [1,2]],
-        [[2,0], [2,1], [2,2]],
-        // Вертикали
-        [[0,0], [1,0], [2,0]],
-        [[0,1], [1,1], [2,1]],
-        [[0,2], [1,2], [2,2]],
-        // Диагонали
-        [[0,0], [1,1], [2,2]],
-        [[0,2], [1,1], [2,0]]
-    ];
-    
-    for (let pattern of winPatterns) {
-        let [a, b, c] = pattern;
-        let val1 = board[a[0]][a[1]];
-        let val2 = board[b[0]][b[1]];
-        let val3 = board[c[0]][c[1]];
-        
-        if (val1 !== '' && val1 === val2 && val2 === val3) {
-            return true;
-        }
+    // Горизонтали, вертикали
+    for (let i = 0; i < 3; i++) {
+        if (board[i][0] !== '' && board[i][0] === board[i][1] && board[i][1] === board[i][2]) return true;
+        if (board[0][i] !== '' && board[0][i] === board[1][i] && board[1][i] === board[2][i]) return true;
     }
+    // Диагонали
+    if (board[0][0] !== '' && board[0][0] === board[1][1] && board[1][1] === board[2][2]) return true;
+    if (board[0][2] !== '' && board[0][2] === board[1][1] && board[1][1] === board[2][0]) return true;
+
     return false;
 }
 
 function checkDraw() {
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
-            if (board[i][j] === '') {
-                return false;
-            }
+            if (board[i][j] === '') return false; // есть пустая клетка
         }
     }
     return true;
-}
-
-function switchPlayer() {
-    activePlayer = activePlayer === 0 ? 1 : 0;
 }
 
 function startGame() {
@@ -55,22 +38,21 @@ function startGame() {
     renderBoard(board);
 }
 
-function click(row, column) {
-    if (board[row][column] !== '') {
-        return;
-    }
-    
-    board[row][column] = players[activePlayer];
+function click(row, col) {
+    if (board[row][col] !== '') return;
+
+    board[row][col] = players[activePlayer];
     renderBoard(board);
-    
+
     if (checkWinner()) {
         showWinner(activePlayer);
         return;
     }
-    
+
+
     if (checkDraw()) {
-        return; 
+        return;
     }
-    
-    switchPlayer();
+
+    activePlayer = activePlayer === 0 ? 1 : 0;
 }
